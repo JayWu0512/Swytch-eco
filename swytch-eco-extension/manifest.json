@@ -1,0 +1,79 @@
+{
+  "manifest_version": 3,
+  "name": "Swytch-eco - Sustainable Shopping Assistant",
+  "version": "1.1.0",
+  "description": "Find eco-friendly alternatives, track your carbon footprint, and shop sustainably.",
+  "default_locale": "en",
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "EcoShopper"
+  },
+
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.amazon.com/*",
+        "https://*.walmart.com/*",
+        "https://*.target.com/*",
+        "https://*.ebay.com/*",
+        "https://*.bestbuy.com/*",
+        "https://*.wayfair.com/*",
+        "https://*.etsy.com/*",
+        "https://*.costco.com/*",
+        "https://*.homedepot.com/*",
+        "https://*.newegg.com/*"
+      ],
+      "js": ["content/content-script.js"],
+      "css": ["content/content-style.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "identity",
+    "contextMenus"
+  ],
+
+  "host_permissions": [
+    "https://*.amazon.com/*",
+    "https://*.walmart.com/*",
+    "https://*.target.com/*",
+    "https://*.ebay.com/*",
+    "https://*.bestbuy.com/*"
+  ],
+
+  "oauth2": {
+    "client_id": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "images/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
