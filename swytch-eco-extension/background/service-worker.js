@@ -2,9 +2,9 @@
  * Swytch-eco - Background Service Worker
  * 
  * Features:
- * 1. Google OAuth 登入（查看 Dashboard/Leaderboard/Rewards 需登入）
- * 2. Vision API 分析圖片特徵
- * 3. Supabase 資料同步
+ * 1. Google OAuth Login (required for Dashboard/Leaderboard/Rewards)
+ * 2. Vision API for Image Feature Analysis
+ * 3. Supabase Data Synchronization
  */
 
 // ============================================================
@@ -161,7 +161,7 @@ async function handleMessage(message, sender) {
         user: state.user
       };
 
-    // === Dashboard (需要登入) ===
+    // === Dashboard (requires login) ===
     case 'GET_DASHBOARD_URL':
       if (!state.isLoggedIn) {
         return {
@@ -209,7 +209,7 @@ async function handleMessage(message, sender) {
 }
 
 // ============================================================
-// Google OAuth 登入
+// Google OAuth Login
 // ============================================================
 
 async function googleLogin() {
@@ -416,7 +416,7 @@ async function clearViewTracker() {
 }
 
 // ============================================================
-// 精確的以圖搜圖分析流程
+// Precise Visual Search Analysis Flow
 // ============================================================
 
 async function startAnalysis(product, tabId) {
@@ -436,7 +436,7 @@ async function startAnalysis(product, tabId) {
     updateProgress('Saving to history...');
     await addToItemsViewed(product);
 
-    // Step 2: 使用 Vision API 分析圖片（精確識別）
+    // Step 2: Analyze image with Vision API (precise recognition)
     updateProgress('Analyzing image with AI vision...');
     const imageAnalysis = await analyzeImageWithVision(product.imageSource);
 
@@ -444,7 +444,7 @@ async function startAnalysis(product, tabId) {
       throw new Error(imageAnalysis.error || 'Image analysis failed');
     }
 
-    // Step 3: 使用分析結果搜尋相似商品
+    // Step 3: Search for similar products using analysis results
     updateProgress('Finding visually similar products...');
     const similarProducts = await searchVisuallySimularProducts(
       imageAnalysis.data,
@@ -455,7 +455,7 @@ async function startAnalysis(product, tabId) {
       throw new Error('No similar products found');
     }
 
-    // Step 4: 使用 LLM 分析和排序
+    // Step 4: Analyze and rank with LLM
     updateProgress('Ranking sustainable alternatives...');
     const recommendation = await buildRecommendation(
       product,
@@ -495,23 +495,23 @@ async function startAnalysis(product, tabId) {
 }
 
 /**
- * Step 2: 使用 Vision API 精確分析圖片
+ * Step 2: Precisely analyze image with Vision API
  * 
- * 流程：
- * 1. 將圖片 URL 轉換為 base64
- * 2. 傳送到 Backend Vision API
- * 3. Backend 呼叫 Google Cloud Vision / OpenAI Vision / Claude Vision
- * 4. 回傳詳細的商品視覺特徵
+ * Flow:
+ * 1. Convert image URL to base64
+ * 2. Send to Backend Vision API
+ * 3. Backend calls Google Cloud Vision / OpenAI Vision / Claude Vision
+ * 4. Return detailed visual features of the product
  */
 async function analyzeImageWithVision(imageUrl) {
   try {
-    // === Mock 實作（開發用）===
-    // 直接使用 URL 進行分析，不需要轉換 base64
+    // === Mock Implementation (for development) ===
+    // Directly use URL for analysis, no need to convert to base64
     updateProgress('Analyzing product with AI Vision...');
 
-    await delay(300);  // 快速回應
+    await delay(300);  // Fast response
 
-    // 根據圖片 URL 生成不同的分析結果（模擬真實場景）
+    // Generate different analysis results based on image URL (simulating real scenario)
     const mockAnalysis = generateMockVisionAnalysis(imageUrl);
 
     console.log('[Swytch-eco] Vision analysis result:', mockAnalysis.category);
@@ -528,12 +528,12 @@ async function analyzeImageWithVision(imageUrl) {
 }
 
 /**
- * 將圖片 URL 轉換為 base64
- * 這樣可以把完整圖片資料傳送到後端進行視覺分析
+ * Convert image URL to base64
+ * This allows sending complete image data to backend for visual analysis
  */
 async function imageUrlToBase64(imageUrl) {
   try {
-    // 使用 fetch 獲取圖片
+    // Fetch image using fetch API
     const response = await fetch(imageUrl, {
       mode: 'cors',
       credentials: 'omit',
@@ -545,12 +545,12 @@ async function imageUrlToBase64(imageUrl) {
 
     const blob = await response.blob();
 
-    // 轉換為 base64
+    // Convert to base64
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64 = reader.result;
-        // 只保留 data 部分
+        // Keep only the data portion
         const base64Data = base64.split(',')[1];
         resolve(base64Data);
       };
@@ -560,17 +560,17 @@ async function imageUrlToBase64(imageUrl) {
 
   } catch (error) {
     console.warn('[Swytch-eco] Image conversion error, using URL fallback:', error.message);
-    // 如果轉換失敗，回傳 null，後端會用 imageUrl 作為備用
+    // If conversion fails, return null, backend will use imageUrl as fallback
     return null;
   }
 }
 
 /**
- * 模擬 Vision API 分析結果
- * 根據 URL 特徵生成不同的商品分析
+ * Mock Vision API analysis result
+ * Generate different product analysis based on URL features
  */
 function generateMockVisionAnalysis(imageUrl) {
-  // 根據 URL 判斷可能的商品類型（模擬真實 Vision 分析）
+  // Determine possible product type based on URL (simulating real Vision analysis)
   const url = imageUrl.toLowerCase();
 
   let category, attributes, searchTags, colors;
@@ -641,7 +641,7 @@ function generateMockVisionAnalysis(imageUrl) {
     searchTags = ['sustainable beauty', 'eco-friendly cosmetics', 'organic skincare', 'cruelty-free makeup'];
     colors = ['#ffc0cb', '#ff69b4', '#ffffff'];
   } else {
-    // 預設：通用商品分析（根據圖片本身分析）
+    // Default: Generic product analysis (based on image itself)
     category = { primary: 'Fashion', secondary: 'Clothing', tertiary: 'Apparel', confidence: 0.80 };
     attributes = { type: 'apparel', material: 'fabric', features: ['general use'] };
     searchTags = ['sustainable alternative', 'eco-friendly option', 'secondhand', 'recycled material'];
@@ -649,10 +649,10 @@ function generateMockVisionAnalysis(imageUrl) {
   }
 
   return {
-    // 商品類別（精確識別）
+    // Product category (precise recognition)
     category,
 
-    // 視覺特徵
+    // Visual features
     visualFeatures: {
       dominantColors: colors,
       colorScheme: colors[0].startsWith('#1') || colors[0].startsWith('#2') || colors[0].startsWith('#3') ? 'dark' : 'light',
@@ -661,45 +661,45 @@ function generateMockVisionAnalysis(imageUrl) {
       texture: attributes.material,
     },
 
-    // 商品屬性（從圖片識別）
+    // Product attributes (identified from image)
     attributes,
 
-    // 偵測到的文字（OCR）
+    // Detected text (OCR)
     detectedText: [],
     detectedLogos: [],
 
-    // 商品標籤（用於搜尋）
+    // Product tags (for search)
     searchTags,
 
-    // 視覺相似度向量（128維，用於 embedding 比對）
+    // Visual similarity vector (128-dim, for embedding comparison)
     visualEmbedding: Array(128).fill(0).map(() => Math.random()),
 
-    // 估計價格範圍
+    // Estimated price range
     estimatedPriceRange: {
       min: 20,
       max: 200,
       currency: 'USD',
     },
 
-    // 信心分數
+    // Confidence score
     overallConfidence: category.confidence,
   };
 }
 
 /**
- * Step 3: 基於視覺特徵搜尋相似商品
+ * Step 3: Search for similar products based on visual features
  * 
- * 真實實作流程：
- * 1. 用視覺 embedding 在商品資料庫中搜尋（向量相似度）
- * 2. 用識別出的類別和標籤進行關鍵字搜尋
- * 3. 結合兩種結果並按相似度排序
- * 4. 過濾出環保/永續的選項
+ * Real implementation flow:
+ * 1. Search product database using visual embedding (vector similarity)
+ * 2. Perform keyword search using identified categories and tags
+ * 3. Combine both results and sort by similarity
+ * 4. Filter for eco-friendly/sustainable options
  */
 async function searchVisuallySimularProducts(imageAnalysis, sourceProduct) {
   try {
     updateProgress('Searching for visually similar products...');
 
-    // === 實際 API 呼叫（上線時啟用）===
+    // === Real API call (enable for production) ===
     /*
     const response = await fetch(`${CONFIG.BACKEND_URL}/api/search/visual`, {
       method: 'POST',
@@ -725,13 +725,13 @@ async function searchVisuallySimularProducts(imageAnalysis, sourceProduct) {
     return await response.json();
     */
 
-    // === Mock 實作（開發用）===
-    await delay(200);  // 快速回應
+    // === Mock Implementation (for development) ===
+    await delay(200);  // Fast response
 
-    // 根據 Vision 分析結果生成精確的替代商品
+    // Generate precise alternative products based on Vision analysis results
     const products = generateVisuallySimularProducts(imageAnalysis, sourceProduct);
 
-    // 根據使用者偏好過濾
+    // Filter based on user preferences
     let filtered = products;
 
     if (state.preferences.maxBudget) {
@@ -742,7 +742,7 @@ async function searchVisuallySimularProducts(imageAnalysis, sourceProduct) {
       filtered = filtered.filter(p => p.rating >= state.preferences.minRating);
     }
 
-    // 排除來源平台（避免顯示同一平台的商品）
+    // Exclude source platform (avoid showing products from same platform)
     if (sourceProduct.platform) {
       const sourcePlatform = sourceProduct.platform.toLowerCase();
       filtered = filtered.filter(p =>
@@ -759,8 +759,8 @@ async function searchVisuallySimularProducts(imageAnalysis, sourceProduct) {
 }
 
 /**
- * 根據 Vision 分析結果生成視覺相似的商品
- * 這模擬了真實的視覺搜尋結果
+ * Generate visually similar products based on Vision analysis results
+ * This simulates real visual search results
  */
 function generateVisuallySimularProducts(imageAnalysis, sourceProduct) {
   const category = imageAnalysis.category;
@@ -769,7 +769,7 @@ function generateVisuallySimularProducts(imageAnalysis, sourceProduct) {
   const searchTags = imageAnalysis.searchTags || [];
   const attributes = imageAnalysis.attributes || {};
 
-  // 根據類別生成更精確的商品名稱
+  // Generate more precise product names based on category
   const productTemplates = getProductTemplates(categoryName, attributes);
 
   const platforms = [
@@ -789,7 +789,7 @@ function generateVisuallySimularProducts(imageAnalysis, sourceProduct) {
     { label: 'Ocean Plastic', detail: 'Made from recycled ocean plastic' },
   ];
 
-  // 生成 5-6 個視覺相似的商品
+  // Generate 5-6 visually similar products
   const products = productTemplates.map((template, index) => {
     const platform = platforms[index % platforms.length];
     const priceMultiplier = template.priceMultiplier || (0.5 + Math.random() * 0.6);
@@ -797,7 +797,7 @@ function generateVisuallySimularProducts(imageAnalysis, sourceProduct) {
     const isEco = template.isEco !== false && (index < 3 || Math.random() > 0.3);
     const ecoInfo = isEco ? ecoLabels[index % ecoLabels.length] : null;
 
-    // 計算視覺相似度（基於類別匹配和特徵匹配）
+    // Calculate visual similarity (based on category and feature matching)
     const visualSimilarity = calculateMockVisualSimilarity(
       template,
       imageAnalysis,
@@ -816,22 +816,22 @@ function generateVisuallySimularProducts(imageAnalysis, sourceProduct) {
       rating: 4.0 + Math.random() * 0.9,
       reviewCount: Math.floor(100 + Math.random() * 10000),
 
-      // 視覺相似度（核心指標）
+      // Visual similarity (core metric)
       visualSimilarity,
 
-      // 匹配原因（說明為什麼這是相似商品）
+      // Match reasons (explaining why this is a similar product)
       matchReasons: generateMatchReasons(template, imageAnalysis),
 
-      // 環保資訊
+      // Eco-friendly information
       co2Savings: isEco ? 1.5 + Math.random() * 4 : 0.5,
       isEcoFriendly: isEco,
       ecoLabel: ecoInfo?.label || null,
       ecoDetails: ecoInfo?.detail || null,
 
-      // 商品描述
+      // Product description
       blurb: template.blurb,
 
-      // 額外的視覺特徵匹配資訊
+      // Additional visual feature matching info
       matchedFeatures: {
         category: category.tertiary || category.secondary,
         type: attributes.type,
@@ -841,12 +841,12 @@ function generateVisuallySimularProducts(imageAnalysis, sourceProduct) {
     };
   });
 
-  // 按視覺相似度排序
+  // Sort by visual similarity
   return products.sort((a, b) => b.visualSimilarity - a.visualSimilarity);
 }
 
 /**
- * 根據商品類別獲取商品模板
+ * Get product templates based on category
  */
 function getProductTemplates(categoryName, attributes) {
   const category = categoryName.toLowerCase();
@@ -933,7 +933,7 @@ function getProductTemplates(categoryName, attributes) {
     ];
   }
 
-  // 預設模板
+  // Default templates
   return [
     { name: `Eco-Friendly ${categoryName} - Sustainable Choice`, priceMultiplier: 0.75, isEco: true, blurb: 'Environmentally responsible alternative' },
     { name: `Refurbished ${categoryName} - Certified`, priceMultiplier: 0.5, isEco: true, blurb: 'Tested and certified, like-new condition' },
@@ -944,67 +944,67 @@ function getProductTemplates(categoryName, attributes) {
 }
 
 /**
- * 計算模擬的視覺相似度
+ * Calculate mock visual similarity
  */
 function calculateMockVisualSimilarity(template, imageAnalysis, baseSimilarity) {
-  // 基於類別匹配調整相似度
+  // Adjust similarity based on category matching
   let similarity = baseSimilarity;
 
-  // Eco 商品通常更相似（因為搜尋針對性更強）
+  // Eco products typically have higher similarity (due to more targeted search)
   if (template.isEco) {
     similarity += 0.02;
   }
 
-  // 確保在 0-1 範圍內
+  // Ensure within 0-1 range
   return Math.min(0.98, Math.max(0.6, similarity));
 }
 
 /**
- * 生成匹配原因
+ * Generate match reasons
  */
 function generateMatchReasons(template, imageAnalysis) {
   const reasons = [];
   const category = imageAnalysis.category;
 
-  // 類別匹配
+  // Category match
   reasons.push(`Same category: ${category.tertiary || category.secondary}`);
 
-  // 類型匹配
+  // Type match
   if (imageAnalysis.attributes?.type) {
     reasons.push(`Similar type: ${imageAnalysis.attributes.type}`);
   }
 
-  // 樣式匹配
+  // Style match
   if (imageAnalysis.visualFeatures?.style) {
     reasons.push(`Matching style: ${imageAnalysis.visualFeatures.style}`);
   }
 
-  // 材質匹配
+  // Material match
   if (template.material || imageAnalysis.attributes?.material) {
     reasons.push(`Compatible material`);
   }
 
-  // Eco 標籤
+  // Eco label
   if (template.isEco) {
     reasons.push(`Eco-friendly alternative`);
   }
 
-  return reasons.slice(0, 3);  // 最多顯示 3 個原因
+  return reasons.slice(0, 3);  // Show maximum 3 reasons
 }
 
 /**
- * Step 4: 建構最終推薦結果
+ * Step 4: Build final recommendation result
  */
 async function buildRecommendation(sourceProduct, alternatives, imageAnalysis) {
-  // 根據偏好排序
+  // Sort by user preference
   const sorted = sortByPreference(alternatives, state.preferences);
 
-  // 計算節省金額
+  // Calculate potential savings
   const sourcePrice = sourceProduct.price || 0;
   const bestPrice = sorted[0]?.price || sourcePrice;
   const potentialSavings = Math.max(0, sourcePrice - bestPrice);
 
-  // 計算平均 CO2 節省
+  // Calculate average CO2 savings
   const totalCO2Savings = sorted.reduce((sum, p) => sum + (p.co2Savings || 0), 0) / sorted.length;
 
   return {
