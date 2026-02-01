@@ -7,3 +7,7 @@ cp .env.example .env
 
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
+
+# run test
+cd backend
+python tests/test_upload.py

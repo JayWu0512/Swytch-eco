@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     # CORS
     CORS_ALLOW_ORIGINS: list[str] = ["*"]
 
+    # OpenAI
+    OPENAI_API_KEY: str | None = None
+    OPENAI_MODEL: str = "gpt-4o-mini"
+
     # Climatiq
     CLIMATIQ_API_KEY: str | None = None
     CLIMATIQ_BASE_URL: str = "https://api.climatiq.io"

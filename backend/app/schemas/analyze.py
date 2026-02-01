@@ -7,7 +7,7 @@ class ProductInfo(BaseModel):
     category: str | None = None
     material: str | None = None
     weight_kg: float | None = None
-    quantity: int = 1
+    quantity: int | None = None
     region: str | None = "global"
 
 
@@ -21,6 +21,7 @@ class ClimatiqEstimate(BaseModel):
 class AlternativeItem(BaseModel):
     title: str
     url: str
+    image_url: str | None = None
     source: str | None = None
 
 
