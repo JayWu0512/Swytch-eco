@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=380">
+  <title>EcoShopper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-top">
+        <div class="brand">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span class="brand-text">Swytch-eco</span>
+        </div>
+        <button id="settingsBtn" class="settings-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Impact Banner -->
+      <div class="impact-banner">
+        <svg class="impact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <div>
+          <div class="impact-label">Total CO2 Saved</div>
+          <div class="impact-value"><span id="carbonSaved">0.0</span> kg</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+      <button class="tab active" data-tab="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        Search
+      </button>
+      <button class="tab" data-tab="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        History
+        <span id="historyBadge" class="tab-badge hidden">0</span>
+      </button>
+      <button class="tab" data-tab="impact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 20V10M18 20V4M6 20v-4"/>
+        </svg>
+        Stats
+      </button>
+    </nav>
+
+    <!-- Search Tab -->
+    <div id="searchTab" class="tab-content">
+      <!-- Initial State -->
+      <div id="initialState" class="state-card">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+        <div class="state-title">Ready to Scan</div>
+        <div class="state-text">Visit a product page and click the floating button to find sustainable alternatives</div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="state-card hidden">
+        <div class="cyber-loader">
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="core"></div>
+        </div>
+        <div id="loadingText" class="loading-text">Analyzing product...</div>
+      </div>
+
+      <!-- Results State -->
+      <div id="resultsState" class="hidden">
+        <!-- Eco Reminder -->
+        <div id="ecoReminder" class="eco-reminder">
+          <svg class="reminder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <div class="reminder-content">
+            <div id="reminderText" class="reminder-text">Before buying, ask yourself: Do I really need this?</div>
+            <div class="cooldown-bar">
+              <div class="cooldown-track"><div id="timerBar" class="cooldown-fill" style="width: 100%"></div></div>
+              <div id="timerText" class="cooldown-text">30s</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Savings Summary -->
+        <div id="savingsSummary" class="savings-summary">
+          <div class="stat-card">
+            <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <div id="moneySaved" class="stat-value">$0</div>
+            <div class="stat-label">Potential Savings</div>
+          </div>
+          <div class="stat-card eco">
+            <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+              <path d="M8 12h8M12 8v8"/>
+            </svg>
+            <div id="co2Saved" class="stat-value">0 kg</div>
+            <div class="stat-label">CO2 Reduced</div>
+          </div>
+        </div>
+
+        <!-- Alternatives List -->
+        <div class="alternatives-section">
+          <div class="section-header">
+            <h3>Sustainable Alternatives</h3>
+            <span id="resultsCount" class="results-count">0</span>
+          </div>
+          <ul id="alternativesList" class="alternatives-list"></ul>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="state-card hidden">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <div id="errorText" class="error-text">Something went wrong</div>
+        <button id="retryBtn" class="retry-btn">Retry</button>
+      </div>
+    </div>
+
+    <!-- History Tab -->
+    <div id="historyTab" class="tab-content hidden">
+      <div class="history-header">
+        <h3 class="section-header">Recently Viewed</h3>
+        <button id="clearHistoryBtn" class="clear-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          Clear
+        </button>
+      </div>
+      <div id="historyList" class="history-list"></div>
+      <div id="emptyHistory" class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+        </svg>
+        <div>No items viewed yet</div>
+      </div>
+    </div>
+
+    <!-- Impact Tab -->
+    <div id="impactTab" class="tab-content hidden">
+      <div class="impact-dashboard">
+        <!-- Main Highlight -->
+        <div class="impact-highlight">
+          <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <div id="totalCO2" class="highlight-value">0.0</div>
+          <div class="highlight-label">kg CO2 Saved</div>
+          <div id="treesEquiv" class="highlight-sub">Equivalent to 0 trees planted</div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <svg class="stat-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <div id="totalSearches" class="stat-item-value">0</div>
+            <div class="stat-item-label">Searches</div>
+          </div>
+          <div class="stat-item">
+            <svg class="stat-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <div id="ecoChoices" class="stat-item-value">0</div>
+            <div class="stat-item-label">Eco Choices</div>
+          </div>
+          <div class="stat-item">
+            <svg class="stat-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <div id="totalSaved" class="stat-item-value">$0</div>
+            <div class="stat-item-label">Saved</div>
+          </div>
+          <div class="stat-item">
+            <svg class="stat-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <div id="userRank" class="stat-item-value">#--</div>
+            <div class="stat-item-label">Rank</div>
+          </div>
+        </div>
+
+        <!-- Weekly Progress -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span class="progress-title">Weekly Goal</span>
+            <span id="weeklyProgress" class="progress-value">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="weeklyProgressBar" class="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <aside id="settingsPanel" class="settings-panel">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button id="closeSettingsBtn" class="close-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-group">
+          <div class="setting-label">Priority</div>
+          <select id="prioritySelect" class="setting-select">
+            <option value="eco_friendly">Eco-Friendly First</option>
+            <option value="save_money">Lowest Price</option>
+            <option value="quality">Highest Rated</option>
+            <option value="balanced">Balanced</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-label">Max Budget ($)</div>
+          <input type="number" id="maxBudgetInput" class="setting-input" placeholder="No limit">
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-label">Min Rating</div>
+          <select id="minRatingSelect" class="setting-select">
+            <option value="">Any</option>
+            <option value="3">3+ Stars</option>
+            <option value="4">4+ Stars</option>
+            <option value="4.5">4.5+ Stars</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-toggle">
+            <span>Cooldown Reminder</span>
+            <input type="checkbox" id="cooldownToggle" checked>
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-label">Cooldown (seconds)</div>
+          <input type="number" id="cooldownSeconds" class="setting-input" value="30" min="5" max="120">
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-toggle">
+            <span>Show CO2 Data</span>
+            <input type="checkbox" id="showCO2Toggle" checked>
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+
+        <button id="saveSettingsBtn" class="btn-primary">Save Settings</button>
+      </div>
+    </aside>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <button id="dashboardBtn" class="dashboard-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span class="dashboard-btn-text">Login for Dashboard</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </footer>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="login-modal hidden">
+    <div class="login-card">
+      <svg class="login-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <h3>Sign In Required</h3>
+      <p>Connect with Google to access your dashboard and track your impact</p>
+      
+      <ul class="login-features">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Leaderboard Rankings
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+          Rewards & Badges
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+          Track Your CO2 Savings
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9m-9 9a9 9 0 0 1 9-9"/></svg>
+          Sync Across Devices
+        </li>
+      </ul>
+      
+      <button id="googleLoginBtn" class="google-login-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Sign in with Google
+      </button>
+      
+      <button id="loginCancelBtn" class="login-cancel">Maybe later</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

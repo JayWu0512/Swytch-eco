@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Swytch-eco",
+    "description": "Extension name"
+  },
+  "appDescription": {
+    "message": "Find eco-friendly alternatives, track your carbon footprint, and shop sustainably.",
+    "description": "Extension description"
+  }
+}
